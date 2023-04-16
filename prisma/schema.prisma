@@ -1,6 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["interactiveTransactions"]
+  provider = "prisma-client-js"
 }
 
 generator fieldEncryptionMigrations {
@@ -15,23 +14,24 @@ datasource db {
 }
 
 model subscriptions {
-  id         String   @id @default(uuid())
+  id           String   @id @default(uuid())
   /// @encrypted
-  name       String
+  name         String
   /// @encrypted
-  notes      String?
-  url        String
+  notes        String?
+  url          String
   /// @encrypted
-  price      String   @default("0")
-  paid       String
-  notify     Boolean  @default(false)
-  date       String
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
-  user_id    String   @db.Uuid
-  active     Boolean? @default(true)
-  nameHash   String?
-  user       users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  price        String   @default("0")
+  paid         String
+  notify       Boolean  @default(false)
+  date         String
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  user_id      String   @db.Uuid
+  active       Boolean? @default(true)
+  cancelled_at String?
+  nameHash     String?
+  user         users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model expenses {
@@ -42,6 +42,7 @@ model expenses {
   notes      String?
   /// @encrypted
   price      String   @default("0")
+  paid_via   String   @default("")
   category   String
   date       String
   created_at DateTime @default(now()) @db.Timestamptz(6)
@@ -94,9 +95,10 @@ model users {
   updated_at                 DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
   currency                   String          @default("INR")
   locale                     String          @default("en")
-  payment_id                 String?
-  order_id                   String?
-  payment_signature          String?
+  order_identifier           String?
+  order_store_id             String?
+  order_number               String?
+  order_status               String?
   billing_start_date         String?
   plan_status                String          @default("basic")
   trial_start_date           DateTime        @default(now()) @db.Timestamptz(6)
@@ -105,6 +107,7 @@ model users {
   new_signup_email           Boolean         @default(false)
   premium_plan_expired_email Boolean         @default(false)
   premium_usage_limit_email  Boolean         @default(false)
+  monthly_email_report       Boolean         @default(false)
   expenses                   expenses[]
   income                     income[]
   investments                investments[]
@@ -115,9 +118,6 @@ model feedbacks {
   id         Int      @id @default(autoincrement())
   message    String
   created_at DateTime @default(now()) @db.Timestamptz(6)
-  os         String
-  device     String
-  client     String
   user_id    String   @db.Uuid
 }
 

@@ -1,15 +1,22 @@
 import {
-	addDays,
 	addMonths,
 	addYears,
 	differenceInMonths,
 	differenceInYears,
 	endOfMonth,
+	endOfWeek,
 	format,
+	isFuture,
 	isThisMonth,
 	isToday,
+	isValid,
 	startOfMonth,
+	startOfWeek,
+	subMonths,
+	subYears,
 } from 'date-fns';
+
+import { filterMap } from 'components/Table/TableFilter';
 
 import { dateFormatStr, payingKey } from 'constants/index';
 
@@ -35,47 +42,66 @@ export const getEndDateOfMonth = (date) => {
 };
 
 export const calculateRenewalDate = (dateStr, paid) => {
-	const createdDateObj = new Date(dateStr);
+	const startDate = new Date(dateStr);
 	const today = new Date();
 
+	if (isFuture(startDate)) {
+		return startDate;
+	}
+
 	if (paid === payingKey.monthly) {
-		const monthlyDate = addMonths(createdDateObj, differenceInMonths(today, createdDateObj));
-		if (isToday(monthlyDate) && !isToday(createdDateObj)) return today;
+		const monthlyDate = addMonths(startDate, differenceInMonths(today, startDate));
+		if (isToday(monthlyDate) && !isToday(startDate)) return today;
 		return addMonths(monthlyDate, 1);
 	}
 
-	const yearRenewalDate = addYears(createdDateObj, differenceInYears(today, createdDateObj));
-	if (isToday(yearRenewalDate) && !isToday(createdDateObj)) return today;
+	const yearRenewalDate = addYears(startDate, differenceInYears(today, startDate));
+	if (isToday(yearRenewalDate) && !isToday(startDate)) return today;
 	return addYears(yearRenewalDate, 1);
 };
 
-export const calculatePaidCount = (datum, start, end) => {
-	const createdDate = new Date(datum.date);
-	const startDate = new Date(start);
-	const endDate = new Date(end);
+export const calculatePreviousRenewalDate = (dateStr, { paid, date }) => {
+	let previousRenewalDate = null;
+	const startDate = new Date(date);
 
-	if (createdDate >= startDate && createdDate <= endDate) {
-		if (datum.paid === payingKey.monthly) {
-			return differenceInMonths(endDate, createdDate) + 1;
-		} else {
-			return differenceInYears(endDate, createdDate) + 1;
-		}
-	} else {
-		return 0;
+	if (isFuture(startDate)) {
+		return startDate;
 	}
-};
-
-export const calculatePaidDate = (dateStr, paid) => {
-	const dateObj = new Date(dateStr);
-	const today = new Date();
 
 	if (paid === payingKey.monthly) {
-		const monthlyDate = addMonths(new Date(dateStr), differenceInMonths(today, dateObj));
-		return addMonths(monthlyDate, 0);
-	} else {
-		const yearRenewalDate = addYears(new Date(dateStr), differenceInYears(today, dateObj));
-		return addYears(yearRenewalDate, 0);
+		previousRenewalDate = subMonths(dateStr, 1);
+		return previousRenewalDate > startDate ? previousRenewalDate : startDate;
 	}
+
+	previousRenewalDate = subYears(dateStr, 1);
+	return previousRenewalDate > startDate ? previousRenewalDate : startDate;
+};
+
+export const calculatePaidDates = (datum, start, end) => {
+	if (!start || !end) return 0;
+
+	const hasValidCancelledAt = !datum.active && datum.cancelled_at !== null && isValid(new Date(datum.cancelled_at));
+	const startDate = new Date(datum.date);
+	const rangeStartDate = new Date(start);
+	const rangeEndDate = hasValidCancelledAt ? new Date(new Date(datum.cancelled_at)) : new Date(end);
+	let startDateCount = 1;
+	let noOfPaidDurations = 0;
+
+	if (datum.paid === payingKey.monthly) {
+		if (!isFuture(startDate)) {
+			noOfPaidDurations = differenceInMonths(rangeEndDate, startDate) + startDateCount;
+		}
+	} else {
+		if (!isFuture(startDate)) {
+			noOfPaidDurations = differenceInYears(rangeEndDate, startDate) + startDateCount;
+		}
+	}
+
+	return [...Array(noOfPaidDurations).keys()]
+		.map((_, index) => {
+			return addMonths(startDate, index);
+		})
+		.filter((rD) => rD >= rangeStartDate && rD <= rangeEndDate);
 };
 
 export const calculateTopCategory = (data) => {
@@ -115,3 +141,12 @@ export const getFirstAndLastDateOfMonth = () => {
 };
 
 export const thisMonth = (datum) => isThisMonth(new Date(datum.date));
+
+export const getRangeDateForFilter = (filter) => {
+	const dateObj = new Date();
+	if (filter === filterMap.thisweek) {
+		return [format(startOfWeek(dateObj), dateFormatStr), format(endOfWeek(dateObj), dateFormatStr)];
+	} else {
+		return [format(startOfMonth(dateObj), dateFormatStr), format(endOfMonth(dateObj), dateFormatStr)];
+	}
+};

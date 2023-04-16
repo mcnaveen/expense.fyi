@@ -7,6 +7,7 @@ const excludeLastColumnIndex = 1;
 
 export const exportTableToCsv = (filename) => {
 	const rows = document.querySelectorAll('table tr');
+
 	const csv = [];
 
 	for (var i = 0; i < rows.length; i++) {
@@ -14,7 +15,7 @@ export const exportTableToCsv = (filename) => {
 		var cols = rows[i].querySelectorAll('td, th');
 		for (var j = 0; j < cols.length - excludeLastColumnIndex; j++) {
 			var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ');
-			data = data.replace(/"/g, '""');
+			data = data.replace(/"/g, '" "');
 			row.push('"' + data + '"');
 		}
 		csv.push(row.join(separator));

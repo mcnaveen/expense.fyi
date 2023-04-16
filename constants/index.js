@@ -5,16 +5,63 @@ export const expensesCategory = {
 	bills: { name: 'Bills', emoji: '🧾' },
 	food: { name: 'Food', emoji: '🍔' },
 	grocery: { name: 'Grocery', emoji: '🛒' },
-	order: { name: 'Order', emoji: '📦' },
-	other: { name: 'Other', emoji: '🤷🏻‍♂️' },
+	order: { name: 'Online Order', emoji: '📦' },
+	other: { name: 'Others', emoji: '🤷🏻‍♂️' },
 	emi: { name: 'EMI', emoji: '🤑' },
-	upi: { name: 'UPI', emoji: '📲' },
-	creditcard: { name: 'Credit Card', emoji: '💳' },
+	sports: { name: 'Sports', emoji: '⚽️' },
 	savings: { name: 'Savings', emoji: '💰' },
+	debt: { name: 'Debt', emoji: '💸' },
+	loan: { name: 'Loan', emoji: '🤫' },
 	medical: { name: 'Medical', emoji: '🏥' },
 	rent: { name: 'Rent', emoji: '🏠' },
 	shopping: { name: 'Shopping', emoji: '🛍️' },
 	travel: { name: 'Travel', emoji: '✈️' },
+};
+
+export const expensesPaidViaList = {
+	cash: { name: 'Cash', emoji: '💵' },
+	creditcard: { name: 'Credit Card', emoji: '💳' },
+	debitcard: { name: 'Debit Card', emoji: '💳' },
+	netbanking: { name: 'Netbanking', emoji: '🏦' },
+	upi: { name: 'UPI', emoji: '📲' },
+};
+
+export const groupedExpensesCategory = {
+	dailyessentials: {
+		name: 'Essentials',
+		list: {
+			food: expensesCategory.food,
+			grocery: expensesCategory.grocery,
+			medical: expensesCategory.medical,
+		},
+	},
+	expenses: {
+		name: 'Expenses',
+		list: {
+			bills: expensesCategory.bills,
+			education: expensesCategory.education,
+			order: expensesCategory.order,
+			rent: expensesCategory.rent,
+		},
+	},
+	leisure: {
+		name: 'Leisure',
+		list: {
+			entertainment: expensesCategory.entertainment,
+			shopping: expensesCategory.shopping,
+			travel: expensesCategory.travel,
+			sports: expensesCategory.sports,
+		},
+	},
+	payments: {
+		name: 'Payments',
+		list: {
+			emi: expensesCategory.emi,
+			savings: expensesCategory.savings,
+			debt: expensesCategory.debt,
+			loan: expensesCategory.loan,
+		},
+	},
 };
 
 export const incomeCategory = {
@@ -63,7 +110,7 @@ export const siteUrls = {
 };
 
 const originalPriceMonthly = 400;
-const originalPriceYearly = 6000;
+const originalPriceYearly = 50;
 const discountPercentage = 40;
 
 export const tiers = {
@@ -71,7 +118,7 @@ export const tiers = {
 	yearly: { basic: 0, premium: (originalPriceYearly / 100) * discountPercentage, og: originalPriceYearly },
 };
 
-export const paymentOptions = { currency: 'INR', locale: 'en' };
+export const paymentOptions = { currency: 'USD', locale: 'en' };
 
 export const tierNames = {
 	basic: {
@@ -98,3 +145,20 @@ export const basicPlanUsageLimit = 100;
 export const premiumPlanUsageLimit = 2500;
 
 export const sentFromEmailId = 'Gokul from Expense.fyi <hello@expense.fyi>';
+
+export const shortcuts = {
+	sidebar: {
+		overview: { path: '/', shortcut: 'o' },
+		income: { path: '/income', shortcut: 'i' },
+		expenses: { path: '/expenses', shortcut: 'e' },
+		subscriptions: { path: '/subscriptions', shortcut: 's' },
+		investments: { path: '/investments', shortcut: 'v' },
+	},
+	expenses: { add: { shortcut: 'a' } },
+	income: { add: { shortcut: 'a' } },
+	subscriptions: { add: { shortcut: 'a' } },
+	investments: { add: { shortcut: 'a' } },
+	overview: {
+		feedback: { shortcut: 'f' },
+	},
+};

@@ -8,16 +8,16 @@ import { sentFromEmailId } from 'constants/index';
 
 export default withUserAuth(async (req, res, user) => {
 	if (req.method === 'POST') {
-		const { message, client, os, device } = req.body;
+		const { message } = req.body;
 		try {
-			await prisma.feedbacks.create({ data: { message, client, os, device, user_id: user.id } });
+			await prisma.feedbacks.create({ data: { message, user_id: user.id } });
 
 			try {
 				await resend.sendEmail({
 					from: sentFromEmailId,
 					subject: '🎉 New Feedback Received',
 					to: 'hello@expense.fyi',
-					replyTo: user.email,
+					reply_to: user.email,
 					react: <FeedbackEmail message={message} email={user.email} />,
 				});
 				res.status(201).json({ message: 'Feedback received.' });
